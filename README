@@ -7,7 +7,7 @@ ec2-tools utility (though not required if you've already created your own SOCKS 
 Add your EC2 information to the script, it should be obvious
 
 Example Usage:
----> I have already spun up instances in the EC2 cloud and I would like gatling_gun to create the reverse proxies to these systems and create a local listener. I should've already spun up the instances.
+---> I have already spun up instances in the EC2 cloud and I would like gatling_gun to create the reverse proxies to these systems and create a local listener.
 $ gaitling_gun.rb 
 starting listening port on 127.0.0.1:60000
 
