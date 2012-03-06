@@ -19,12 +19,12 @@ optparse = OptionParser.new do|opts|
    end
 
    $options[:lport] = 60000
-   opts.on( '-l', '--lport n', 'The local port to listen on. Defaults to 6000.' ) do|t|
+   opts.on( '-l', '--lport n', 'The local port to listen on. Defaults to 60000.' ) do|t|
      $options[:lport] = t
    end
 
    $options[:rport] = 60001
-   opts.on( '-r', '--rport n', 'The proxies port range to start on. Defaults to 6001.' ) do|t|
+   opts.on( '-r', '--rport n', 'The proxies port range to start on. Defaults to 60001.' ) do|t|
      $options[:rport] = t
    end
 
@@ -101,52 +101,52 @@ def build_local_proxy
 	max_threads = $proxies.length*10
 	threads = []
 	
-	puts "starting listening port on #{listen_port}"
+	puts "Starting listening port on 127.0.0.1:#{listen_port}"
 	server = TCPServer.new(nil, listen_port)
 	while true
-	  # Start a new thread for every client connection.
-	  threads << Thread.new(server.accept) do |client_socket|
-	    begin
-	      begin
-		rport = $proxies[rand($proxies.size)]
-	        server_socket = TCPSocket.new(remote_host, rport)
-	      rescue Errno::ECONNREFUSED
-	        client_socket.close
-	        raise
-	      end
-	
-	      while true
-	        # Wait for data to be available on either socket.
-	        (ready_sockets, dummy, dummy) = IO.select([client_socket, server_socket])
-	        begin
-	          ready_sockets.each do |socket|
-	            data = socket.readpartial(10000)
-	            if socket == client_socket
-	              server_socket.write data
-	              server_socket.flush
-	            else
-	              client_socket.write data
-	              client_socket.flush
-	            end
-	          end
-	        rescue EOFError
-	          break
-	        end
-	      end
-	    rescue StandardError => e
-	      puts "Thread #{Thread.current} got exception #{e.inspect}"
-	    end
-	    client_socket.close rescue StandardError
-	    server_socket.close rescue StandardError
-	  end
+	# Start a new thread for every client connection.
+	threads << Thread.new(server.accept) do |client_socket|
+		begin
+			begin
+				rport = $proxies[rand($proxies.size)]
+				server_socket = TCPSocket.new(remote_host, rport)
+				rescue Errno::ECONNREFUSED
+				client_socket.close
+				raise
+			end
 
-	  # Clean up the dead threads, and wait until we have available threads.
-	  threads = threads.select { |t| t.alive? ? true : (t.join; false) }
-	  while threads.size >= max_threads
-	    sleep 1.5
-	    threads = threads.select { |t| t.alive? ? true : (t.join; false) }
-	  end
-	end	
+		while true
+		# Wait for data to be available on either socket.
+			(ready_sockets, dummy, dummy) = IO.select([client_socket, server_socket])
+				begin
+					ready_sockets.each do |socket|
+						data = socket.readpartial(10000)
+						if socket == client_socket
+							server_socket.write data
+							server_socket.flush
+						else
+							client_socket.write data
+							client_socket.flush
+						end
+					end
+					rescue EOFError
+					break
+				end
+			end
+			rescue StandardError => e
+			puts "Thread #{Thread.current} got exception #{e.inspect}"
+			end
+		client_socket.close rescue StandardError
+		server_socket.close rescue StandardError
+		end
+
+		# Clean up the dead threads, and wait until we have available threads.
+		threads = threads.select { |t| t.alive? ? true : (t.join; false) }
+		while threads.size >= max_threads
+			sleep 1.5
+			threads = threads.select { |t| t.alive? ? true : (t.join; false) }
+		end
+	end
 end
 
 if $options[:noec2]
