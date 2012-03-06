@@ -90,7 +90,7 @@ def build_remote_proxies(ip)
 
 		# this is also annoying as the proxy won't be destroyed when the script exits
 
-		$proxies.push(proxy_port) #FINISH THIS, ADD THE PROXY LISTENING PORT		
+		$proxies.push(proxy_port) 	
 	end
 end
 
