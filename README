@@ -1,9 +1,13 @@
-gaitling_gun is a very basic script for creating SSH reverse proxies in the Amazon EC2 cloud and then using those as SOCKS proxies. The idea is similar to privoxy. Basically you spin up a bunch of instances and gaitling_gun will take care of the work of creating the reverse proxies to these systems and opening a single localhost listener to point your tool at. Requests are then randomly distributed between the multiple SOCKS proxies.
+gaitling_gun is a very basic script for creating SSH reverse proxies in the Amazon EC2 cloud and then using those as SOCKS proxies. The idea is similar to privoxy. Basically you spin up a bunch of instances and gaitling_gun will take care of the work of creating the reverse proxies to these systems and opening a single localhost listener to point your tool(s) at. Requests are then randomly distributed between the multiple existing SOCKS proxies.
 
 Very useful for avoiding IP blockage during a pen test. 
 
 Prerequisites:
-ec2-tools utility (though not required if you've already created your own SOCKS proxies)
+# apt-get install ec2-api-tools
+# gem install aws
+
+ec2-api-tools utility (though not required if you've already created your own SOCKS proxies)
+AWS gem
 Add your EC2 information to the script, it should be obvious
 
 Example Usage:
