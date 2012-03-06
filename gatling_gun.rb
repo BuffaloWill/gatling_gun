@@ -65,12 +65,12 @@ def list_ips
 
 	regions.each{ |region|
 		`ec2-describe-instances --region #{region}`.each_line { |line|
- 		   if line =~ /\bec2-([0-9-]+)/
-			ip = $1.gsub('-','.')
-			puts "#{region}: #{ip}"
-			#create ssh proxy
-			create_proxy(ip) unless $options[:noec2]				 
-		   end
+			if line =~ /\bec2-([0-9-]+)/
+				ip = $1.gsub('-','.')
+				puts "#{region}: #{ip}"
+				#create ssh proxy
+				create_proxy(ip) unless $options[:noec2] 
+			end
 		}
 	}
 end
@@ -78,11 +78,10 @@ end
 def build_remote_proxies(ip)
 	if $options[:noec2]
 		for pport in (1..$options[:noec2].to_i) 
-			$proxies.push(pport+$options[:rport]-1) #FINISH THIS, ADD THE PROXY LISTENING PORT
+			$proxies.push(pport+$options[:rport]-1)
 		end
 	else
-		proxy_port = $options[:rport].to_i + TOTAL_PROXIES.to_i
-		#ssh SOCKS proxy
+		proxy_port = $options[:rport].to_i + TOTAL_PROXIES.to_i	
 		#DANGER: this is a real hack but net::ssh doesn't seem to support creating local socks proxies
 		# Also avoids the hassle of gathering all fingerprints from remote ssh servers if you've never
 		# logged into them before (although it is much less secure)
