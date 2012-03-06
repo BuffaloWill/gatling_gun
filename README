@@ -15,7 +15,7 @@ Example Usage:
 $ gaitling_gun.rb 
 starting listening port on 127.0.0.1:60000
 
----> I have already created SOCKS proxies to any set of systems. I have set the 2 listeners on 60001 and 60002.
+---> I have already created SOCKS proxies to any set of systems; ignore ec2 and just create the local listener and randomly distribute my traffic between my SOCKS proxies. I have set the 2 listeners on 60001 and 60002.
 $ gaitling_gun.rb -f 2
 starting listening port on 127.0.0.1:60000
 
