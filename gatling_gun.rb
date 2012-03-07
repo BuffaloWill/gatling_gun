@@ -95,6 +95,7 @@ def build_remote_proxies(ip)
 end
 
 def build_local_proxy
+	# I can no longer find the orginal for some of the proxy code, needs a rewrite anyways
 	remote_host = "127.0.0.1"
 	listen_port = $options[:lport]
 	max_threads = $proxies.length*10
