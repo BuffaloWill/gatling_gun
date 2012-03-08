@@ -6,41 +6,45 @@ require 'optparse'
 $options = {}
 
 optparse = OptionParser.new do|opts|
-   # Set a banner, displayed at the top
-   # of the help screen.
-   opts.banner = "gaitling_gun.rb [$options]"
+	# Set a banner, displayed at the top
+	# # of the help screen.
+	opts.banner = "gaitling_gun.rb [$options]"
 
-   # This displays the help screen, all programs are
-   # assumed to have this option.
-   opts.on( '-h', '--help', "This script opens up a listening port and randomly forwards traffic to multiple SOCKS proxies (similar to privoxy)
+	# This displays the help screen, all programs are
+	# assumed to have this option.
+	opts.on( '-h', '--help', "This script opens up a listening port and randomly forwards traffic to multiple SOCKS proxies (similar to privoxy)
 				It is meant to be used with EC2 but doesn't require it." ) do
-     puts opts
-     exit
-   end
+		puts opts
+		exit
+	end
 
-   $options[:lport] = 60000
-   opts.on( '-l', '--lport n', 'The local port to listen on. Defaults to 60000.' ) do|t|
-     $options[:lport] = t
-   end
+	$options[:lport] = 60000
+	opts.on( '-l', '--lport n', 'The local port to listen on. Defaults to 60000.' ) do|t|
+		$options[:lport] = t
+	end
 
-   $options[:rport] = 60001
-   opts.on( '-r', '--rport n', 'The proxies port range to start on. Defaults to 60001.' ) do|t|
-     $options[:rport] = t
-   end
+	$options[:rport] = 60001
+	opts.on( '-r', '--rport n', 'The proxies port range to start on. Defaults to 60001.' ) do|t|
+		$options[:rport] = t
+	end
 
-   $options[:blacklist] = nil
-   opts.on( '-b', '--blacklist FILE', 'A file containing the list of IPs not to connect to in your ec2 cloud.' ) do|t|
-  	$options[:blacklist] = t
-   end
+	$options[:blacklist] = nil
+		opts.on( '-b', '--blacklist FILE', 'A file containing the list of IPs not to connect to in your ec2 cloud.' ) do|t|
+			$options[:blacklist] = t
+	end
 
-   $options[:noec2] = nil
-   opts.on( '-f', '--noec2 n', 'To not utilize ec2 or create the SSH connections for the user. The script still expects the you to enter the number
+	$options[:noec2] = nil
+	opts.on( '-f', '--noec2 n', 'To not utilize ec2 or create the SSH connections for the user. The script still expects the you to enter the number
 				of SOCKS proxies listening. It will then go from proxies starting port range. For example,
 				# gaitling_gun.rb --noec2 5
 				Will expect there are SOCKS proxies listening on 60001,60002,60003,60004,and 60005 ' ) do|t|
-  	$options[:noec2] = t
-   end
+		$options[:noec2] = t
+	end
 
+	$options[:user] = "ubuntu"
+	opts.on( '-u', '--user USER', 'SSH username to connect as.' ) do|t|
+		$options[:user] = t
+	end
 
 end
 
@@ -51,8 +55,8 @@ TOTAL_PROXIES = 0 unless $options[:noec2]
 $proxies = []
 
 if ACCESS_KEY_ID == '<<ACCESS_KEY_ID>>' and ($options[:noec2] == nil)
-   puts "\n PLEASE ADD YOUR ACCESS KEY ID AND SECRET ACCESS KEY TO THE SCRIPT OR NO MAS EC2!!"
-   exit 1
+	puts "\n PLEASE ADD YOUR ACCESS KEY ID AND SECRET ACCESS KEY TO THE SCRIPT OR NO MAS EC2!!"
+	exit 1
 end
 
 
@@ -86,11 +90,11 @@ def build_remote_proxies(ip)
 		# Also avoids the hassle of gathering all fingerprints from remote ssh servers if you've never
 		# logged into them before (although it is much less secure)
 
-		`ssh -D #{proxy_port}-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ubuntu@#{ip} &`
+		`ssh -D #{proxy_port}-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{$options[:user]}@#{ip} &`
 
 		# this is also annoying as the proxy won't be destroyed when the script exits
 
-		$proxies.push(proxy_port) 	
+		$proxies.push(proxy_port)
 	end
 end
 
@@ -100,7 +104,7 @@ def build_local_proxy
 	listen_port = $options[:lport]
 	max_threads = $proxies.length*10
 	threads = []
-	
+
 	puts "Starting listening port on 127.0.0.1:#{listen_port}"
 	server = TCPServer.new(nil, listen_port)
 	while true
