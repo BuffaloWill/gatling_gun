@@ -1,0 +1,2 @@
+- Add support for the fog gem, so it's not EC2 dependent
+- Provide target testing setting; "As a user I would like to know when my proxy's IP has been blocked by the target."

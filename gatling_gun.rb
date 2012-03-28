@@ -87,10 +87,8 @@ def build_remote_proxies(ip)
 	else
 		proxy_port = $options[:rport].to_i + TOTAL_PROXIES.to_i	
 		#DANGER: this is a real hack but net::ssh doesn't seem to support creating local socks proxies
-		# Also avoids the hassle of gathering all fingerprints from remote ssh servers if you've never
-		# logged into them before (although it is much less secure)
 
-		`ssh -D #{proxy_port}-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{$options[:user]}@#{ip} &`
+		`ssh -D #{proxy_port} #{$options[:user]}@#{ip} &`
 
 		# this is also annoying as the proxy won't be destroyed when the script exits
 
@@ -99,7 +97,8 @@ def build_remote_proxies(ip)
 end
 
 def build_local_proxy
-	# I can no longer find the orginal for some of the proxy code, needs a rewrite anyways
+	# Found the modified copypasta
+	# http://bitblender.blogspot.com/2010/01/transparent-tcp-proxy-in-ruby-jruby.html
 	remote_host = "127.0.0.1"
 	listen_port = $options[:lport]
 	max_threads = $proxies.length*10
