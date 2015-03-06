@@ -73,13 +73,14 @@ def list_ips
 				ip = $1.gsub('-','.')
 				puts "#{region}: #{ip}"
 				#create ssh proxy
-				create_proxy(ip) unless $options[:noec2] 
+				build_remote_proxies(ip) unless $options[:noec2] 
 			end
 		}
 	}
 end
 
 def build_remote_proxies(ip)
+	puts "|+| Attempting to setup a SOCKS proxy for #{ip}"
 	if $options[:noec2]
 		for pport in (1..$options[:noec2].to_i) 
 			$proxies.push(pport+$options[:rport]-1)
